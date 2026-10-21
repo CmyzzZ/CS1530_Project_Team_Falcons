@@ -57,10 +57,10 @@ FR: FR11    Priority: Could    MVP: no
 [ ] New comments show up on the recipe page with the time they were posted.
 
 E3: Recipe Management
-Admins can add new recipes, fix wrong steps, and manage ingredient tags in the database.
+Admins and user can add new recipes, fix wrong steps, and manage ingredient tags in the database.
 
 US8: Create a new recipe entry 
-As an admin, I want to add a new Chinese dish with its ingredients. 
+As an admin or user, I want to add a new Chinese dish with its ingredients. 
 FR: FR9    Priority: Must    MVP: yes
 [ ] The admin form has inputs for dish name in English and Chinese, prep time, ingredients, seasonings, and steps.
 [ ] The form cannot be saved if important inputs like dish name or steps are left blank.
