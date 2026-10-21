@@ -7,7 +7,7 @@ Team members:
 
 1.Mingyu Chen
 
-2.
+2.Jiakai Dai
 
 3.
 
