@@ -10,7 +10,7 @@ FR: FR1    Priority: Must    MVP: yes
 [ ] The user can remove any ingredient tag by clicking or tapping on it.
 
 US2: Search dishes by ingredient match 
-When cooking, I want to see dishes sorted by how well they match what i have on hand, so i can decide which too cook. 
+As a cook, I want to see dishes sorted by how well they match what I have on hand, so I can decide which to cook. 
 FR: FR2    Priority: Must    MVP: yes
 [ ] The app shows full match dishes on top and partial match dishes below them.
 [ ] Every returned dish contains at least one of the ingredients entered by the user.
@@ -25,7 +25,8 @@ FR: FR3    Priority: Should    MVP: yes
 [ ] Dishes with zero missing items say all ingredients are ready.
 
 US4: Filter recipes by cuisine style and diet 
-As a cook, I want to filter dishes by Chinese region and diet rules so that I find food that fits me. FR: FR4    Priority: Should    MVP: no
+As a cook, I want to filter dishes by Chinese region and diet rules so that I find food that fits me. 
+FR: FR4    Priority: Should    MVP: no
 [ ] The user can pick regional styles like Sichuan or Cantonese.
 [ ] The user can pick diet choices like Vegetarian or Nut-Free.
 [ ] The list of dishes updates right away after a filter is selected.
@@ -35,7 +36,7 @@ E2: Cooking Instruction and Personalization
 Users can read cooking steps, estimate time to prepare, save favorite dishes, and leave comments.
 
 US5: View step-by-step cooking instructions 
-When preparing food, I want to see simple cooking steps, prep time, and seasonings so that I can cook the dish easily. 
+As a cook, I want to see simple cooking steps, prep time, and seasonings so that I can cook the dish easily. 
 FR: FR5    Priority: Must    MVP: yes
 [ ] The recipe page shows the total prep time,  and all needed seasonings.
 [ ] The cooking steps are numbered from first to last and are easy to read.
@@ -57,25 +58,27 @@ FR: FR11    Priority: Could    MVP: no
 [ ] New comments show up on the recipe page with the time they were posted.
 
 E3: Recipe Management
-Admins and user can add new recipes, fix wrong steps, and manage ingredient tags in the database.
+Admins and users can add new recipes, fix wrong steps, and manage ingredient tags in the database.
 
 US8: Create a new recipe entry 
 As an admin or user, I want to add a new Chinese dish with its ingredients. 
 FR: FR9    Priority: Must    MVP: yes
-[ ] The admin form has inputs for dish name in English and Chinese, prep time, ingredients, seasonings, and steps.
+[ ] The recipe form has inputs for dish names in English and Chinese, prep time, ingredients, seasonings, and steps.
 [ ] The form cannot be saved if important inputs like dish name or steps are left blank.
 [ ] When saved, the new dish goes into the database and can be searched right away.
 
 US9: Add custom ingredients and cuisine tags 
-As an admin, I want to add new ingredients and region tags so that dishes are tagged correctly. FR:    FR9 Priority: Should    MVP: yes
+As an admin, I want to add new ingredients and region tags so that dishes are tagged correctly. 
+FR:    FR9 Priority: Should    MVP: yes
 [ ] The admin can type in a new ingredient name in both English and Chinese.
 [ ] The admin can add a new region tag.
 [ ] Newly created ingredients and tags show up as options when making a recipe.
 
 US10: Edit existing recipe instructions and quantities
-As an admin, I want to fix wrong steps or ingredient amounts so that cooks get the right steps. FR: FR10    Priority: Should    MVP: no
+As an admin, I want to fix wrong steps or ingredient amounts so that cooks get the right steps. 
+FR: FR10    Priority: Should    MVP: no
 [ ] The admin can pick an existing recipe to edit.
-[ ] Loads current data correctly.
+[ ] Loads current data correctly, including steps, ingredients, and ingredients quantity. The tags should also be loaded if there are any tags assigned.
 [ ] Updates the recipe details right away.
 [ ] The screen shows a message confirming that the changes were saved.
 
@@ -83,5 +86,7 @@ US11: Suggest ingredient substitutions
 As a cook, I want to see substitute ingredients if some Chinese ingredient is hard to find so that I can buy things at local US stores. 
 FR:    FR6 Priority:    Could MVP: no
 [ ] Hard-to-find ingredients have a substitute note next to them.
+[ ] Admin are able to manually add solitude ingredients for specific recipe.
 [ ] Clicking the note shows simple items to buy instead from local stores.
 [ ] If no replacement works, the app says the ingredient is required.
+
