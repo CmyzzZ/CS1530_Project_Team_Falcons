@@ -82,7 +82,7 @@ MVP: no
 Admins and users can add new recipes, fix wrong steps, and manage ingredient tags in the database.
 
 ## US8: Create a new recipe entry
-As an admin, I want to add a new Chinese dish with its ingredients.
+As an admin, I want to add a new Chinese dish with its ingredients so that cooks can find and cook it.
 FR: FR9
 Priority: Must
 MVP: yes
