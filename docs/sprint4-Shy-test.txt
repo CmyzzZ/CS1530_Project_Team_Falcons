@@ -1,0 +1,20 @@
+Sprint 4 local backend smoke test
+Platform Windows
+Python 3.13.4
+FastAPI 0.162.2
+Uvicorn 0.54.0
+
+Start command
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+Search & Matching
+GET http://127.0.0.1:8000/health
+HTTP 200 OK
+{"status":"ok"}
+
+Recipe Catalog
+GET http://127.0.0.1:8000/recipes/health
+HTTP 200 OK
+{"status":"ok"}
