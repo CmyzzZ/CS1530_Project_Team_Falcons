@@ -1,0 +1,98 @@
+{
+  "results": [
+    {
+      "id": 1,
+      "name_en": "Tomato and Eggs",
+      "name_zh": "番茄炒蛋",
+      "matched_ingredients": [
+        "egg",
+        "tomato"
+      ],
+      "missing_ingredients": [],
+      "matched_ingredient_details": [
+        {
+          "id": "egg",
+          "name_en": "Egg",
+          "name_zh": "鸡蛋"
+        },
+        {
+          "id": "tomato",
+          "name_en": "Tomato",
+          "name_zh": "番茄"
+        }
+      ],
+      "missing_ingredient_details": [],
+      "matched_count": 2,
+      "missing_count": 0,
+      "total_ingredients": 2,
+      "match_ratio": 1,
+      "is_full_match": true
+    },
+    {
+      "id": 4,
+      "name_en": "Tomato and Egg Rice",
+      "name_zh": "番茄鸡蛋饭",
+      "matched_ingredients": [
+        "egg",
+        "tomato"
+      ],
+      "missing_ingredients": [
+        "rice"
+      ],
+      "matched_ingredient_details": [
+        {
+          "id": "egg",
+          "name_en": "Egg",
+          "name_zh": "鸡蛋"
+        },
+        {
+          "id": "tomato",
+          "name_en": "Tomato",
+          "name_zh": "番茄"
+        }
+      ],
+      "missing_ingredient_details": [
+        {
+          "id": "rice",
+          "name_en": "Cooked rice",
+          "name_zh": "米饭"
+        }
+      ],
+      "matched_count": 2,
+      "missing_count": 1,
+      "total_ingredients": 3,
+      "match_ratio": 0.6666666666666666,
+      "is_full_match": false
+    },
+    {
+      "id": 2,
+      "name_en": "Egg Fried Rice",
+      "name_zh": "蛋炒饭",
+      "matched_ingredients": [
+        "egg"
+      ],
+      "missing_ingredients": [
+        "rice"
+      ],
+      "matched_ingredient_details": [
+        {
+          "id": "egg",
+          "name_en": "Egg",
+          "name_zh": "鸡蛋"
+        }
+      ],
+      "missing_ingredient_details": [
+        {
+          "id": "rice",
+          "name_en": "Cooked rice",
+          "name_zh": "米饭"
+        }
+      ],
+      "matched_count": 1,
+      "missing_count": 1,
+      "total_ingredients": 2,
+      "match_ratio": 0.5,
+      "is_full_match": false
+    }
+  ]
+}
