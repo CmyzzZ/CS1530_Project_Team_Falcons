@@ -1,0 +1,37 @@
+{
+  "ingredients": [
+    {
+      "id": "cucumber",
+      "name_en": "Cucumber",
+      "name_zh": "黄瓜",
+      "aliases": [
+        "cucumbers"
+      ]
+    },
+    {
+      "id": "egg",
+      "name_en": "Egg",
+      "name_zh": "鸡蛋",
+      "aliases": [
+        "eggs"
+      ]
+    },
+    {
+      "id": "rice",
+      "name_en": "Cooked rice",
+      "name_zh": "米饭",
+      "aliases": [
+        "rice"
+      ]
+    },
+    {
+      "id": "tomato",
+      "name_en": "Tomato",
+      "name_zh": "番茄",
+      "aliases": [
+        "tomatoes",
+        "西红柿"
+      ]
+    }
+  ]
+}
