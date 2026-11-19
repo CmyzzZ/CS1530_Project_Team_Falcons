@@ -86,3 +86,33 @@ def test_search_blank_ingredient_is_rejected():
     )
 
     assert response.status_code == 422
+    
+def test_database_unavailable_returns_generic_503(monkeypatch):
+    import psycopg
+
+    from backend.data_management import database
+
+    app.dependency_overrides.pop(get_catalog, None)
+
+    def fail_load_catalog():
+        raise psycopg.OperationalError("private-connection-details")
+
+    monkeypatch.setattr(
+        database,
+        "load_catalog",
+        fail_load_catalog,
+    )
+
+    response = client.post(
+        "/search",
+        json={"ingredients": ["egg"]},
+    )
+
+    assert response.status_code == 503
+
+    assert response.json() == {
+        "detail": (
+            "Recipe database is unavailable. "
+            "Please try again later."
+        ),
+    }

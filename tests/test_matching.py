@@ -138,3 +138,13 @@ def test_conflicting_aliases_are_rejected():
 
     with pytest.raises(ValueError, match="one ingredient"):
         build_alias_map(ingredients)
+
+def test_mixed_known_and_unknown_ingredients_keep_valid_matches():
+    results = match_recipes(
+        ["egg", "beef"],
+        RECIPES,
+        INGREDIENTS,
+    )
+
+    assert [item["id"] for item in results] == [1, 2, 4]
+    assert all(item["matched_count"] == 1 for item in results)
