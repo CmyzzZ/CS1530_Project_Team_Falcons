@@ -1,12 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import IngredientTag from './IngredientTag';
 import { ingredientName } from './ingredients';
 import { colors, radius } from './theme';
 
-// One RecipeMatch from POST /search (US2 + US3).
-export default function RecipeCard({ recipe }) {
+// One RecipeMatch from POST /search (US2 + US3 + US6).
+export default function RecipeCard({ recipe, isFavorite = false, onToggleFavorite }) {
   const { t, i18n } = useTranslation();
   const language = i18n.language;
   const primary = language === 'zh' ? recipe.name_zh : recipe.name_en;
@@ -25,6 +25,24 @@ export default function RecipeCard({ recipe }) {
             {recipe.is_full_match ? `✓ ${t('fullMatchBadge')}` : t('partialMatchBadge', { n: recipe.missing_count })}
           </Text>
         </View>
+        {onToggleFavorite ? (
+          <Pressable
+            onPress={() => onToggleFavorite(recipe)}
+            style={[styles.starButton, isFavorite && styles.starButtonActive]}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isFavorite }}
+            accessibilityLabel={
+              isFavorite
+                ? t('favoriteRemoveLabel', { name: primary })
+                : t('favoriteSaveLabel', { name: primary })
+            }
+            testID={`favorite-toggle-${recipe.id}`}
+          >
+            <Text style={[styles.starIcon, isFavorite && styles.starIconActive]}>
+              {isFavorite ? '★' : '☆'}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
 
       <Text style={styles.matchText}>
@@ -116,6 +134,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
+  tags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
   matchText: {
     marginTop: 12,
     fontSize: 14,
@@ -139,8 +161,23 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.textMuted,
   },
-  tags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  starButton: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    borderRadius: radius.pill,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+  starButtonActive: {
+    borderColor: colors.warnText,
+    backgroundColor: colors.warnBg,
+  },
+  starIcon: {
+    fontSize: 16,
+    color: colors.textMuted,
+  },
+  starIconActive: {
+    color: colors.warnText,
   },
 });
