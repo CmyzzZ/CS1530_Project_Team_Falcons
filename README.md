@@ -80,16 +80,28 @@ CS1530_Project_Team_Falcons/
 └── README.md
 ```
 
-## How to Run the Skeleton
+## Features
+
+### Search recipes by ingredients (US1, US2)
+Type the ingredients you have in English or Chinese (for example `tomato` or `鸡蛋`) and press Enter or **Add**, or tap a common ingredient below the input. Each ingredient appears as a tag; tap a tag to remove it, or use **Clear all**. The app returns Chinese dishes that use at least one of your ingredients: full matches appear first under "You can cook these now", and partial matches follow, sorted by how many ingredients match.
+
+### See missing ingredients (US3)
+Each recipe card shows "Matched X of Y ingredients", the ingredients you already have, and the ingredients you are missing in red. Recipes with nothing missing are marked "All ingredients ready", so you know what to buy before you cook.
+
+### Save favorite recipes (US6)
+Tap the star icon on a recipe card to save it, and tap it again to remove it. Open **Favorites** at the top of the page to see all saved recipes and remove any of them. Favorites are stored on your device, so no account or login is needed.
+
+### English and Chinese interface
+Tap **中文** / **English** in the top-right corner to switch the interface language. Recipe names are shown in both languages.
+
+## How to Run
 
 ### Prerequisites
 
-- Python 3.12 or newer (tested with Python 3.12.7 and 3.13.4)
-- pip (comes with Python)
+- Python 3.12 or newer
+- Node.js (LTS version) and npm
+- Docker Desktop (to run PostgreSQL), or a local PostgreSQL installation
 - Git
-- No database, Node.js or API key is needed for the current skeleton.
-
-Dependencies (installed in step 3): FastAPI 0.162.2 and Uvicorn 0.54.0.
 
 ### 1. Clone the repository
 
@@ -98,70 +110,84 @@ git clone https://github.com/CmyzzZ/CS1530_Project_Team_Falcons.git
 cd CS1530_Project_Team_Falcons
 ```
 
-### 2. Create and activate a virtual environment
+### 2. Start the database
 
-Windows (PowerShell):
+Make sure Docker Desktop is running, then start PostgreSQL from the repository root:
+
+```bash
+docker compose up -d
+```
+
+This starts PostgreSQL 17 with UTF-8 encoding on `127.0.0.1:55432`.
+
+### 3. Set up the backend
+
+Create and activate a virtual environment (Windows PowerShell shown; on macOS/Linux use `python3 -m venv .venv` and `source .venv/bin/activate`):
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-```
-
-Windows (Git Bash):
-
-```bash
-python -m venv .venv
-source .venv/Scripts/activate
-```
-
-macOS / Linux:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Install the dependencies
-
-```bash
 pip install -r backend/requirements.txt
 ```
 
-### 4. Start the server
+Set the `DATABASE_URL` environment variable. It is only valid in the current terminal, so set it again whenever you open a new one:
 
-Run this from the repository root (the folder that contains `backend/`), not from inside `backend/`:
+```powershell
+# Windows PowerShell
+$env:DATABASE_URL="postgresql://falcons:falcons_dev@127.0.0.1:55432/falcons"
+```
+
+```bash
+# macOS / Linux / Git Bash
+export DATABASE_URL="postgresql://falcons:falcons_dev@127.0.0.1:55432/falcons"
+```
+
+Create the tables and load the development recipes:
+
+```bash
+python -m backend.data_management.init_db
+```
+
+You should see `Database tables and development data are ready.`
+
+### 4. Start the backend
+
+From the repository root, in the same terminal:
 
 ```bash
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-You should see:
+Check it at <http://127.0.0.1:8000/docs>.
 
-```
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-```
+### 5. Start the frontend
 
-Press `Ctrl+C` to stop the server.
-
-### 5. Check that it works
-
-With the server running, open these URLs in a browser, or use `curl` in a second terminal:
-
-| Subsystem | Request | Expected response |
-|---|---|---|
-| Search & Matching | `GET http://127.0.0.1:8000/health` | `200 OK`, `{"status":"ok"}` |
-| Recipe Catalog | `GET http://127.0.0.1:8000/recipes/health` | `200 OK`, `{"status":"ok"}` |
+Open a second terminal:
 
 ```bash
-curl http://127.0.0.1:8000/health
+cd frontend
+npm install
+npx expo start --web
 ```
+
+The web app opens at <http://localhost:8081>. To try the mobile app, run `npx expo start` and scan the QR code with Expo Go on your phone. In that case, copy `frontend/.env.example` to `frontend/.env.local` and set `EXPO_PUBLIC_API_URL` to your laptop's LAN IP (for example `http://192.168.1.20:8000`), because the phone cannot reach `127.0.0.1` on your laptop.
+
+### 6. Run the tests
+
+Backend (from the repository root):
 
 ```bash
-curl http://127.0.0.1:8000/recipes/health
+pip install -r backend/requirements-dev.txt
+python -m pytest -v
 ```
 
-You can also open the interactive API docs at <http://127.0.0.1:8000/docs>; both endpoints are listed there under "Search & Matching" and "Recipe Catalog".
+The PostgreSQL integration test is skipped unless `TEST_DATABASE_URL` is set.
+
+Frontend (from `frontend/`):
+
+```bash
+npm test
+```
 
 ### Troubleshooting
 
@@ -169,23 +195,25 @@ You can also open the interactive API docs at <http://127.0.0.1:8000/docs>; both
 - `python` is not found on macOS/Linux – use `python3` instead.
 - PowerShell blocks `Activate.ps1` – run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, or use Git Bash.
 - Port 8000 is already in use – start with `--port 8001` and use that port in the URLs.
+- `docker` is not recognized – install Docker Desktop, start it, and open a new terminal.
+- The app shows that the recipe database is unavailable (HTTP 503) – `DATABASE_URL` is not set in the terminal running the backend, or the database container is not running (`docker compose up -d`).
 
 ### Secrets
 
-Do not commit passwords or API keys. `.env` is ignored by Git. When the database connection is added, settings such as the database URL will be documented in `.env.example`; copy it to `.env` and fill in your own values.
+Do not commit passwords or API keys. `.env` is ignored by Git. The database password in `compose.yaml` is for local development only.
 
 ## What Works So Far
 
-- The FastAPI backend starts locally with Uvicorn.
-- Search & Matching: `GET /health` returns `{"status":"ok"}`.
-- Recipe Catalog: `GET /recipes/health` returns `{"status":"ok"}`.
-- The folder structure matches all seven subsystems from the Sprint 3 decomposition.
-- The skeleton was run on Windows with Python 3.13.4 and Python 3.12.7 (see `docs/sprint4-*-test.txt`).
+- Ingredient search (US1, US2): enter ingredients in English or Chinese and get Chinese recipes ranked by match quality, with full matches first.
+- Missing ingredients (US3): each recipe card shows matched and missing ingredients.
+- Favorites (US6): save and remove recipes with the star icon; favorites are stored on the device.
+- The interface can switch between English and Chinese.
+- Recipe and ingredient data are stored in PostgreSQL (UTF-8) and loaded through the Data Management subsystem.
+- CI runs the backend build and tests on every pull request targeting `main`.
 
 ## What Does Not Work Yet
 
-- No real recipe search, ingredient matching or recipe details yet; the two endpoints are only health checks.
-- Recipe Administration, Comments and Data Management are empty placeholder folders.
-- No PostgreSQL schema or database connection yet, so no data is stored.
-- No frontend yet: the React Native + Expo app (User Interface and Favorites) has not been created.
-- Nothing is deployed to Render yet; the skeleton only runs locally.
+- Recipe details with cooking steps and prep time (US5).
+- Filtering by regional cuisine or dietary restriction (US4).
+- Recipe Administration (US8–US10) and Comments (US7).
+- Nothing is deployed to Render yet; the app only runs locally.
