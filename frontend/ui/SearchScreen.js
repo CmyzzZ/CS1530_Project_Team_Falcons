@@ -3,6 +3,14 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { useTranslation } from 'react-i18next';
 
 import { API_BASE_URL, fetchIngredients, searchRecipes } from '../api/client';
+import FavoritesScreen from '../favorites/FavoritesScreen';
+import {
+  isFavorite,
+  loadFavorites,
+  removeFavoriteFromList,
+  saveFavorites,
+  toggleFavoriteList,
+} from '../favorites/storage';
 import IngredientInput from './IngredientInput';
 import {
   addTags,
@@ -41,6 +49,8 @@ function errorMessage(error, t) {
 export default function SearchScreen() {
   const { t, i18n } = useTranslation();
 
+  const [activeTab, setActiveTab] = useState('search');
+  const [favorites, setFavorites] = useState([]);
   const [catalog, setCatalog] = useState({ status: 'loading', items: [] });
   const [catalogAttempt, setCatalogAttempt] = useState(0);
   const [text, setText] = useState('');
@@ -55,6 +65,19 @@ export default function SearchScreen() {
     () => (splitInput(text).length > 1 ? [] : suggestIngredients(text, catalog.items, tagKeys)),
     [text, catalog.items, tagKeys],
   );
+
+  // Load saved favorite recipes from local device storage (US6).
+  useEffect(() => {
+    let active = true;
+    loadFavorites().then((items) => {
+      if (active) {
+        setFavorites(items);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // GET /ingredients for autocomplete, alias resolution and the common list.
   useEffect(() => {
@@ -168,6 +191,22 @@ export default function SearchScreen() {
     setNotice(null);
   }, []);
 
+  const handleToggleFavorite = useCallback((recipe) => {
+    setFavorites((current) => {
+      const updated = toggleFavoriteList(current, recipe);
+      saveFavorites(updated);
+      return updated;
+    });
+  }, []);
+
+  const handleRemoveFavorite = useCallback((recipeId) => {
+    setFavorites((current) => {
+      const updated = removeFavoriteFromList(current, recipeId);
+      saveFavorites(updated);
+      return updated;
+    });
+  }, []);
+
   const toggleLanguage = useCallback(() => {
     i18n.changeLanguage(i18n.language === 'zh' ? 'en' : 'zh');
   }, [i18n]);
@@ -200,79 +239,120 @@ export default function SearchScreen() {
           </Pressable>
         </View>
 
-        <View style={styles.panel}>
-          <IngredientInput
-            text={text}
-            onChangeText={setText}
-            onSubmit={handleSubmit}
-            suggestions={suggestions}
-            onPickIngredient={handlePick}
-            tags={tags}
-            onRemoveTag={handleRemove}
-            onClearAll={handleClearAll}
-            catalog={catalog.items}
-          />
-
-          {notice ? (
-            <Text style={[styles.notice, notice.tone === 'warn' && styles.noticeWarn]} testID="notice">
-              {t(notice.key, notice.params)}
+        <View style={styles.tabRow}>
+          <Pressable
+            onPress={() => setActiveTab('search')}
+            style={[styles.tabButton, activeTab === 'search' && styles.tabButtonActive]}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'search' }}
+            testID="tab-search"
+          >
+            <Text style={[styles.tabText, activeTab === 'search' && styles.tabTextActive]}>
+              {t('navSearch')}
             </Text>
-          ) : null}
-
-          {catalog.status === 'loading' ? <ActivityIndicator style={styles.catalogSpinner} color={colors.brand} /> : null}
-          {catalog.status === 'error' ? (
-            <View style={styles.banner} testID="catalog-error">
-              <Text style={styles.bannerText}>{t('catalogError')}</Text>
-              <Pressable onPress={() => setCatalogAttempt((n) => n + 1)} accessibilityRole="button" hitSlop={6}>
-                <Text style={styles.retry}>{t('retry')}</Text>
-              </Pressable>
-            </View>
-          ) : null}
+          </Pressable>
+          <Pressable
+            onPress={() => setActiveTab('favorites')}
+            style={[styles.tabButton, activeTab === 'favorites' && styles.tabButtonActive]}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: activeTab === 'favorites' }}
+            testID="tab-favorites"
+          >
+            <Text style={[styles.tabText, activeTab === 'favorites' && styles.tabTextActive]}>
+              {t('navFavorites', { n: favorites.length })}
+            </Text>
+          </Pressable>
         </View>
 
-        <View style={styles.results} accessibilityLiveRegion="polite">
-          {search.status === 'idle' ? <Text style={styles.empty}>{t('emptyPrompt')}</Text> : null}
+        {activeTab === 'favorites' ? (
+          <FavoritesScreen favorites={favorites} onRemoveFavorite={handleRemoveFavorite} />
+        ) : (
+          <>
+            <View style={styles.panel}>
+              <IngredientInput
+                text={text}
+                onChangeText={setText}
+                onSubmit={handleSubmit}
+                suggestions={suggestions}
+                onPickIngredient={handlePick}
+                tags={tags}
+                onRemoveTag={handleRemove}
+                onClearAll={handleClearAll}
+                catalog={catalog.items}
+              />
 
-          {search.status === 'loading' ? (
-            <View style={styles.loadingRow}>
-              <ActivityIndicator color={colors.brand} />
-              <Text style={styles.loadingText}>{t('searching')}</Text>
-            </View>
-          ) : null}
-
-          {search.status === 'error' ? (
-            <View style={[styles.banner, styles.bannerError]} testID="search-error">
-              <Text style={[styles.bannerText, { color: colors.missingText }]}>{errorMessage(search.error, t)}</Text>
-            </View>
-          ) : null}
-
-          {search.status === 'done' ? (
-            <>
-              <Text style={styles.summary} testID="results-summary">
-                {t('resultsSummary', { n: search.results.length, ms: search.ms })}
-              </Text>
-              {search.results.length === 0 ? <Text style={styles.empty}>{t('noResults')}</Text> : null}
-
-              {fullMatches.length > 0 ? (
-                <Text style={styles.groupTitle} accessibilityRole="header">
-                  {t('fullMatches')}
+              {notice ? (
+                <Text style={[styles.notice, notice.tone === 'warn' && styles.noticeWarn]} testID="notice">
+                  {t(notice.key, notice.params)}
                 </Text>
               ) : null}
-              {fullMatches.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
-              ))}
 
-              {partialMatches.length > 0 ? (
-                <Text style={styles.groupTitle} accessibilityRole="header">
-                  {t('partialMatches')}
-                </Text>
+              {catalog.status === 'loading' ? <ActivityIndicator style={styles.catalogSpinner} color={colors.brand} /> : null}
+              {catalog.status === 'error' ? (
+                <View style={styles.banner} testID="catalog-error">
+                  <Text style={styles.bannerText}>{t('catalogError')}</Text>
+                  <Pressable onPress={() => setCatalogAttempt((n) => n + 1)} accessibilityRole="button" hitSlop={6}>
+                    <Text style={styles.retry}>{t('retry')}</Text>
+                  </Pressable>
+                </View>
               ) : null}
-              {partialMatches.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
-              ))}
-            </>
-          ) : null}
-        </View>
+            </View>
+
+            <View style={styles.results} accessibilityLiveRegion="polite">
+              {search.status === 'idle' ? <Text style={styles.empty}>{t('emptyPrompt')}</Text> : null}
+
+              {search.status === 'loading' ? (
+                <View style={styles.loadingRow}>
+                  <ActivityIndicator color={colors.brand} />
+                  <Text style={styles.loadingText}>{t('searching')}</Text>
+                </View>
+              ) : null}
+
+              {search.status === 'error' ? (
+                <View style={[styles.banner, styles.bannerError]} testID="search-error">
+                  <Text style={[styles.bannerText, { color: colors.missingText }]}>{errorMessage(search.error, t)}</Text>
+                </View>
+              ) : null}
+
+              {search.status === 'done' ? (
+                <>
+                  <Text style={styles.summary} testID="results-summary">
+                    {t('resultsSummary', { n: search.results.length, ms: search.ms })}
+                  </Text>
+                  {search.results.length === 0 ? <Text style={styles.empty}>{t('noResults')}</Text> : null}
+
+                  {fullMatches.length > 0 ? (
+                    <Text style={styles.groupTitle} accessibilityRole="header">
+                      {t('fullMatches')}
+                    </Text>
+                  ) : null}
+                  {fullMatches.map((recipe) => (
+                    <RecipeCard
+                      key={recipe.id}
+                      recipe={recipe}
+                      isFavorite={isFavorite(favorites, recipe.id)}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  ))}
+
+                  {partialMatches.length > 0 ? (
+                    <Text style={styles.groupTitle} accessibilityRole="header">
+                      {t('partialMatches')}
+                    </Text>
+                  ) : null}
+                  {partialMatches.map((recipe) => (
+                    <RecipeCard
+                      key={recipe.id}
+                      recipe={recipe}
+                      isFavorite={isFavorite(favorites, recipe.id)}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  ))}
+                </>
+              ) : null}
+            </View>
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -396,5 +476,30 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginTop: 8,
     marginBottom: 8,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 14,
+  },
+  tabButton: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    borderRadius: radius.pill,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  tabButtonActive: {
+    borderColor: colors.brand,
+    backgroundColor: colors.brand,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  tabTextActive: {
+    color: colors.selectedText,
   },
 });
