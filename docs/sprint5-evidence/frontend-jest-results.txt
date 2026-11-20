@@ -1,0 +1,24 @@
+frontend/__tests__/client.test.js
+  PASS  fetchIngredients calls GET /ingredients
+  PASS  searchRecipes posts the ingredient list as JSON
+  PASS  a 503 from the backend becomes an "unavailable" ApiError
+  PASS  a failed connection becomes a "network" ApiError
+frontend/__tests__/ingredients.test.js
+  PASS  cleanName (matches backend clean_name) > folds case, full-width characters and whitespace
+  PASS  makeTag > resolves English, Chinese names and aliases to the same ingredient
+  PASS  makeTag > keeps unknown text as an unrecognised tag
+  PASS  makeTag > ignores blank input
+  PASS  addTags / removeTag > does not add the same ingredient twice in different languages
+  PASS  addTags / removeTag > removes a tag by key without touching the others
+  PASS  addTags / removeTag > respects the backend limit of 50 ingredients
+  PASS  splitInput accepts English and Chinese separators
+  PASS  suggestIngredients lists prefix matches first and skips selected ones
+  PASS  labels follow the chosen language and the payload uses ingredient ids
+frontend/__tests__/SearchScreen.test.js
+  PASS  typing a Chinese alias adds an English tag and shows ranked results with missing items
+  PASS  full matches are grouped first and say all ingredients are ready
+  PASS  tapping a tag removes it and clears the results
+  PASS  the language toggle switches dish and ingredient names to Chinese
+  PASS  shows a clear message when the backend cannot be reached
+
+Tests: 19 passed, 0 failed, 19 total
